@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flowr Trip · 여행 홈페이지</title>
+  <meta name="description" content="추천여행지 / 패키지여행 / 스페샬추천 — HTML+JS 순수 프론트엔드" />
+
+  <!-- 파비콘: 프로젝트 경로에 맞게 수정 가능 -->
+  <link rel="icon" type="image/png" href="./asset/images/logo.png" />
+
+  <!-- 메인 CSS -->
+  <link rel="stylesheet" href=".\asset\images\css\styles.css" />
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="brand">
+        <div class="logo">
+          <!-- 헤더 로고 이미지 (원하신 파일 경로) -->
+          <img src="./asset/images/logo.png" alt="Flowr Trip 로고" width="30" height="30" />
+        </div>
+        <span>Flowr Trip</span>
+      </div>
+
+      <a href="#reco">추천여행지</a>
+      <a href="#packages">패키지여행</a>
+      <a href="#specials">스페샬추천</a>
+
+      <div class="spacer"></div>
+
+      <div class="search" title="제목/태그 검색">
+        <span>🔎</span>
+        <input id="q" placeholder="여행지, 테마, 태그 검색" />
+      </div>
+
+      <button class="btn" id="adminBtn" title="관리자 모드(Toggle)">관리자</button>
+    </div>
+
+    <div class="container hero">
+      <h1>여행이 쉬워지는 순간 ✨</h1>
+      <p>추천 큐레이션 · 합리적 패키지 · 단 1% 스페샬 추천</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- 추천여행지 -->
+    <section id="reco">
+      <div class="section-bar">
+        <h2>추천여행지</h2>
+        <div class="section-controls">
+          <label class="chip">정렬
+            <select id="sort-recommended" style="all:unset;margin-left:.5rem">
+              <option value="featured">추천순</option>
+              <option value="price-asc">가격↑</option>
+              <option value="price-desc">가격↓</option>
+              <option value="rating-desc">평점↓</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div class="grid" id="grid-recommended"></div>
+    </section>
+
+    <!-- 패키지여행 -->
+    <section id="packages">
+      <div class="section-bar">
+        <h2>패키지여행</h2>
+        <div class="section-controls">
+          <label class="chip">정렬
+            <select id="sort-packages" style="all:unset;margin-left:.5rem">
+              <option value="featured">추천순</option>
+              <option value="price-asc">가격↑</option>
+              <option value="price-desc">가격↓</option>
+              <option value="rating-desc">평점↓</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div class="grid" id="grid-packages"></div>
+    </section>
+
+    <!-- 스페샬 추천 -->
+    <section id="specials">
+      <div class="section-bar">
+        <h2>스페샬추천</h2>
+        <div class="section-controls">
+          <label class="chip">정렬
+            <select id="sort-specials" style="all:unset;margin-left:.5rem">
+              <option value="featured">추천순</option>
+              <option value="price-asc">가격↑</option>
+              <option value="price-desc">가격↓</option>
+              <option value="rating-desc">평점↓</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div class="grid" id="grid-specials"></div>
+    </section>
+  </main>
+
+  <!-- Admin floating bar -->
+  <div class="adminbar" id="adminBar" aria-hidden="true">
+    <button class="btn primary" id="addItemBtn">+ 항목 추가</button>
+    <button class="btn" id="exportBtn">JSON 내보내기</button>
+    <label class="btn" for="importFile" style="cursor:pointer">JSON 가져오기</label>
+    <input id="importFile" type="file" accept="application/json" style="display:none" />
+    <button class="btn" id="seedBtn">샘플 데이터 초기화</button>
+    <button class="btn" id="clearBtn">모든 데이터 삭제</button>
+  </div>
+
+  <!-- Modal: Add/Edit Item -->
+  <div class="modal" id="modal">
+    <div class="sheet">
+      <div class="bar">
+        <h3 id="modalTitle">항목 추가</h3>
+        <button class="btn" id="closeModal">닫기</button>
+      </div>
+      <form id="itemForm" class="form">
+        <div style="grid-column:1/-1" class="row3">
+          <label>섹션
+            <select name="section" required>
+              <option value="recommended">추천여행지</option>
+              <option value="packages">패키지여행</option>
+              <option value="specials">스페샬추천</option>
+            </select>
+          </label>
+          <label>노출여부
+            <select name="featured">
+              <option value="true" selected>노출</option>
+              <option value="false">숨김</option>
+            </select>
+          </label>
+          <label>평점(0~5)
+            <input name="rating" type="number" min="0" max="5" step="0.1" value="4.8" />
+          </label>
+        </div>
+
+        <label>제목
+          <input name="title" required placeholder="예) 다낭 바나힐 & 호이안" />
+        </label>
+        <label>부제목(선택)
+          <input name="subtitle" placeholder="간단 설명" />
+        </label>
+
+        <label>대표 이미지 URL
+          <input name="image" placeholder="https://...jpg" />
+        </label>
+        <div class="row">
+          <label>가격
+            <input name="price" type="number" step="1000" min="0" placeholder="599000" />
+          </label>
+          <label>통화
+            <select name="currency">
+              <option value="KRW" selected>KRW</option>
+              <option value="USD">USD</option>
+              <option value="VND">VND</option>
+              <option value="JPY">JPY</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="row">
+          <label>지역/출발지
+            <input name="location" placeholder="예) 인천 출발 · 다낭" />
+          </label>
+          <label>여행기간
+            <input name="duration" placeholder="예) 3박 5일" />
+          </label>
+        </div>
+
+        <label>태그(쉼표로 구분)
+          <input name="tags" placeholder="자유여행, 가족, 온천" />
+        </label>
+
+        <label>하이라이트(줄바꿈으로 구분)
+          <textarea name="highlights" rows="3" placeholder="바나힐 골든브릿지&#10;호이안 야시장&#10;미케비치 자유시간"></textarea>
+        </label>
+
+        <label>상세설명
+          <textarea name="description" rows="4" placeholder="여행 일정과 포함/불포함 등을 요약합니다."></textarea>
+        </label>
+
+        <label>상세보기 링크(선택)
+          <input name="link" placeholder="/detail/danang.html 또는 https://..." />
+        </label>
+
+        <div style="grid-column:1/-1;display:flex;gap:10px;justify-content:flex-end;margin-top:6px">
+          <button class="btn" type="button" id="cancelBtn">취소</button>
+          <button class="btn primary" type="submit">저장</button>
+        </div>
+      </form>
+      <p class="notice">스키마: { id, title, subtitle, image, price, currency, location, duration, rating, tags[], highlights[], description, link, featured }</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid" role="contentinfo">
+        <div class="footer-card">
+          <h3>고객센터</h3>
+          <p>전화 : <a class="tel" href="tel:+82448641470">044-864-1470</a></p>
+          <p>팩스 : <span class="mono">0508-9600-1470</span></p>
+        </div>
+
+        <div class="footer-card">
+          <h3>주소</h3>
+          <address>세종시 장군면 산학리길 75-3, 103호(애드모아빌딩)</address>
+          <div class="footer-actions">
+            <a class="btn" target="_blank" rel="noopener"
+               href="https://maps.google.com/?q=%EC%84%B8%EC%A2%85%EC%8B%9C%20%EC%9E%A5%EA%B5%B0%EB%A9%B4%20%EC%82%B0%ED%95%99%EB%A6%AC%EA%B8%B8%2075-3%2C%20103%ED%98%B8%20%28%EC%95%A0%EB%93%9C%EB%AA%A8%EC%95%84%EB%B9%8C%EB%94%A9%29">
+              지도보기
+            </a>
+          </div>
+        </div>
+
+        <div class="footer-card">
+          <h3>입금계좌</h3>
+          <p class="mono">- (추가 예정)</p>
+        </div>
+
+        <div class="footer-card">
+          <h3>사업자 정보</h3>
+          <p>사업자등록번호 : <span class="mono">732-08-03207</span></p>
+          <p>상호 : Flowr Trip</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        © 2025 Flowr Trip · 모든 상품/요금은 현지 사정에 따라 변동될 수 있습니다. · 데이터는 브라우저 <b>localStorage</b>에 저장됩니다.
+      </div>
+    </div>
+
+    <!-- SEO 구조화 데이터 -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TravelAgency",
+      "name": "Flowr Trip",
+      "telephone": "+82-44-864-1470",
+      "faxNumber": "+82-508-9600-1470",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "KR",
+        "addressLocality": "세종특별자치시",
+        "streetAddress": "장군면 산학리길 75-3, 103호 (애드모아빌딩)"
+      },
+      "taxID": "732-08-03207"
+    }
+    </script>
+  </footer>
+
+  <!-- 메인 JS -->
+  <script src="./src/app.js"></script>
+</body>
+</html>
