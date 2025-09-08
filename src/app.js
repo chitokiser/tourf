@@ -149,8 +149,8 @@ function toggleAdminBar(){ adminBar.classList.toggle('show', _admin); adminBar.s
 
 adminBtn.addEventListener('click', ()=>{
   if(!_admin){
-    const pass = prompt('관리자 비밀번호를 입력하세요 (기본값: 1234)');
-    if(pass==='1234'){ toggleAdmin(true); }
+    const pass = prompt('관리자 비밀번호를 입력하세요 ');
+    if(pass==='888888'){ toggleAdmin(true); }
     else if(pass!==null){ alert('비밀번호가 올바르지 않습니다.'); }
   }else{ toggleAdmin(false); }
 });
